@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Plant Warehouse Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <h1><i class="fas fa-industry"></i> Vidul BioMass - Dehiattakandiya </h1>
+            <div class="user-controls">
+                <div id="user-info" class="hidden">
+                    <span id="username-display"></span>
+                    <button id="logout-btn">Logout</button>
+                </div>
+                <div id="login-section">
+                    <input type="email" id="login-email" placeholder="Email">
+                    <input type="password" id="login-password" placeholder="Password">
+                    <button id="login-btn">Login</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</li>
+            <li data-section="issue-items"><i class="fas fa-tools"></i> Issue Items</li>
+            <li data-section="return-items"><i class="fas fa-undo"></i> Return Items</li>
+            <li data-section="inventory"><i class="fas fa-boxes"></i> Inventory</li>
+            <li data-section="reports"><i class="fas fa-chart-bar"></i> Reports</li>
+            <li data-section="admin"><i class="fas fa-cog"></i> Admin</li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Items Checked Out</h3>
+                    <p id="checked-out-count">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Jobs</h3>
+                    <p id="active-jobs-count">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Low Stock Items</h3>
+                    <p id="low-stock-count">0</p>
+                </div>
+            </div>
+            <div class="recent-activity">
+                <h3>Recent Activity</h3>
+                <div id="activity-feed" class="activity-feed"></div>
+            </div>
+        </section>
+
+        <!-- Issue Items Section -->
+        <section id="issue-items" class="content-section">
+            <h2><i class="fas fa-tools"></i> Issue Items</h2>
+            <form id="issue-form" class="animated-form">
+                <div class="form-group">
+                    <label for="job-id">Job ID:</label>
+                    <input type="text" id="job-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="person-name">Person Responsible:</label>
+                    <input type="text" id="person-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-description">Task Description:</label>
+                    <textarea id="task-description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="issue-date">Date:</label>
+                    <input type="date" id="issue-date" required>
+                </div>
+                
+                <div id="items-container">
+                    <div class="item-row">
+                        <div class="form-group">
+                            <label>Item:</label>
+                            <select class="item-select" required>
+                                <option value="">Select an item</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity:</label>
+                            <input type="number" class="item-quantity" min="1" required>
+                        </div>
+                        <button type="button" class="remove-item-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                
+                <button type="button" id="add-item-btn" class="secondary-btn"><i class="fas fa-plus"></i> Add Another Item</button>
+                <button type="submit" class="primary-btn"><i class="fas fa-paper-plane"></i> Issue Items</button>
+            </form>
+        </section>
+
+        <!-- Return Items Section -->
+        <section id="return-items" class="content-section">
+            <h2><i class="fas fa-undo"></i> Return Items</h2>
+            <div class="search-container">
+                <input type="text" id="job-search" placeholder="Search by Job ID or Person...">
+                <button id="search-btn"><i class="fas fa-search"></i> Search</button>
+            </div>
+            <div id="active-jobs-list" class="jobs-list"></div>
+        </section>
+
+        <!-- Inventory Section -->
+        <section id="inventory" class="content-section">
+            <h2><i class="fas fa-boxes"></i> Inventory</h2>
+            <div class="inventory-controls">
+                <button id="add-new-item-btn" class="primary-btn"><i class="fas fa-plus"></i> Add New Item</button>
+                <button id="refresh-inventory-btn" class="secondary-btn"><i class="fas fa-sync"></i> Refresh</button>
+            </div>
+            <div class="inventory-table-container">
+                <table id="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Item ID</th>
+                            <th>Item Name</th>
+                            <th>Category</th>
+                            <th>Current Stock</th>
+                            <th>Minimum Stock</th>
+                            <th>Unit</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-body">
+                        <!-- Inventory items will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Reports Section -->
+        <section id="reports" class="content-section">
+            <h2><i class="fas fa-chart-bar"></i> Reports</h2>
+            <div class="report-controls">
+                <div class="form-group">
+                    <label for="report-month">Select Month:</label>
+                    <input type="month" id="report-month">
+                </div>
+                <button id="generate-report-btn" class="primary-btn"><i class="fas fa-file-export"></i> Generate Report</button>
+                <button id="print-report-btn" class="secondary-btn"><i class="fas fa-print"></i> Print Report</button>
+            </div>
+            <div id="report-results" class="report-results">
+                <div class="report-placeholder">
+                    <i class="fas fa-chart-pie"></i>
+                    <p>Select a month and generate report to view data</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Section -->
+        <section id="admin" class="content-section">
+            <h2><i class="fas fa-cog"></i> Admin Panel</h2>
+            <div class="admin-tabs">
+                <div class="admin-tab active" data-tab="users">User Management</div>
+                <div class="admin-tab" data-tab="categories">Item Categories</div>
+                <div class="admin-tab" data-tab="settings">System Settings</div>
+            </div>
+            
+            <div id="users-tab" class="admin-tab-content active">
+                <h3>User Management</h3>
+                <button id="add-user-btn" class="primary-btn"><i class="fas fa-user-plus"></i> Add New User</button>
+                <table id="users-table">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-body">
+                        <!-- Users will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="categories-tab" class="admin-tab-content">
+                <h3>Item Categories</h3>
+                <div class="category-form">
+                    <input type="text" id="new-category" placeholder="New category name">
+                    <button id="add-category-btn" class="primary-btn">Add Category</button>
+                </div>
+                <ul id="categories-list" class="categories-list">
+                    <!-- Categories will be loaded here -->
+                </ul>
+            </div>
+            
+            <div id="settings-tab" class="admin-tab-content">
+                <h3>System Settings</h3>
+                <form id="settings-form">
+                    <div class="form-group">
+                        <label for="company-name">Company Name:</label>
+                        <input type="text" id="company-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="low-stock-threshold">Low Stock Threshold (%):</label>
+                        <input type="number" id="low-stock-threshold" min="1" max="100" value="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="auto-logout">Auto Logout (minutes):</label>
+                        <input type="number" id="auto-logout" min="1" value="30">
+                    </div>
+                    <button type="submit" class="primary-btn">Save Settings</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="add-item-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Add New Inventory Item</h3>
+            <form id="new-item-form">
+                <div class="form-group">
+                    <label for="new-item-name">Item Name:</label>
+                    <input type="text" id="new-item-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-item-category">Category:</label>
+                    <select id="new-item-category" required>
+                        <!-- Categories will be loaded here -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new-item-stock">Initial Stock:</label>
+                    <input type="number" id="new-item-stock" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-item-min-stock">Minimum Stock:</label>
+                    <input type="number" id="new-item-min-stock" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-item-unit">Unit of Measurement:</label>
+                    <input type="text" id="new-item-unit" required>
+                </div>
+                <button type="submit" class="primary-btn">Add Item</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="return-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Return Items for Job: <span id="return-job-id"></span></h3>
+            <p>Person: <span id="return-person-name"></span></p>
+            <p>Task: <span id="return-task"></span></p>
+            <p>Issued Date: <span id="return-issue-date"></span></p>
+            
+            <div id="return-items-list" class="return-items-list"></div>
+            
+            <div class="form-group">
+                <label for="return-notes">Notes:</label>
+                <textarea id="return-notes" placeholder="Any notes about the condition of returned items..."></textarea>
+            </div>
+            
+            <button id="confirm-return-btn" class="primary-btn">Confirm Return</button>
+        </div>
+    </div>
+
+    <div id="add-user-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Add New User</h3>
+            <form id="new-user-form">
+                <div class="form-group">
+                    <label for="new-user-email">Email:</label>
+                    <input type="email" id="new-user-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-user-name">Full Name:</label>
+                    <input type="text" id="new-user-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-user-role">Role:</label>
+                    <select id="new-user-role" required>
+                        <option value="technician">Technician</option>
+                        <option value="supervisor">Supervisor</option>
+                        <option value="admin">Administrator</option>
+                        <option value="auditor">Auditor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new-user-password">Temporary Password:</label>
+                    <input type="password" id="new-user-password" required>
+                </div>
+                <button type="submit" class="primary-btn">Create User</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="notification" class="notification hidden">
+        <p id="notification-message"></p>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore-compat.js"></script>
+    
+    <!-- Chart.js for reports -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Main JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
